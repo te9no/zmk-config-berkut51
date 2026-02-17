@@ -1,0 +1,8 @@
+file_format: "1"
+id: Berkut51
+name: Berkut51
+type: shield
+url: https://github.com/te9no/zmk-config-Berkut51
+requires: [seeeduino_xiao_ble]
+features:
+  - keys

@@ -1,0 +1,114 @@
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/input_transform.h>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <input/processors/runtime-input-processor.dtsi>
+
+#include "Berkut51.dtsi"
+#include "Berkut51_TB.dsti"
+
+&pinctrl {
+    spi0_default: spi0_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK,  1, 13)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 5)>,
+                    <NRF_PSEL(SPIM_MISO, 1, 11)>;
+        };
+    };
+
+    spi0_sleep: spi0_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_SCK,  1, 13)>,
+                    <NRF_PSEL(SPIM_MOSI, 0, 5)>,
+                    <NRF_PSEL(SPIM_MISO, 1, 11)>;
+            low-power-enable;
+        };
+    };
+};
+
+&spi0 {
+    status = "okay";
+    compatible = "nordic,nrf-spim";
+    pinctrl-0 = <&spi0_default>;
+    pinctrl-1 = <&spi0_sleep>;
+    pinctrl-names = "default", "sleep";
+    cs-gpios = <&gpio0 9 GPIO_ACTIVE_LOW>, 
+               <&xiao_d 1 GPIO_ACTIVE_LOW>;
+
+    trackball: trackball@0 {
+        status = "okay";
+        compatible = "pixart,pmw3610";
+        reg = <0>;
+        spi-max-frequency = <2000000>;
+        irq-gpios = <&xiao_d 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        cpi = <800>;
+        evt-type = <INPUT_EV_REL>;
+        x-input-code = <INPUT_REL_X>;
+        y-input-code = <INPUT_REL_Y>;
+    };
+
+    expander: expander@1 {
+        status = "okay";
+        compatible = "microchip,mcp23sxx";
+        spi-max-frequency = <1000000>;
+        reg = <1>;
+        gpio-controller;
+        label = "MCP23S17";
+        #gpio-cells = <2>;
+        ngpios = <16>;
+        int-gpios = <&xiao_d 7 GPIO_ACTIVE_LOW>;
+    };
+    
+    kscan0: kscan_composite {
+        compatible = "zmk,kscan-composite";
+        matrix1 {
+            kscan = <&kscan1>;
+        };
+        
+        matrix2 {
+            kscan = <&kscan2>;
+            col-offset = <8>;
+        };
+
+        direct {
+            kscan = <&kscan3>;
+            row-offset = <8>;
+        };
+    };
+
+    kscan1: kscan1 {
+        compatible = "zmk,kscan-gpio-charlieplex";
+        interrupt-gpios = <&xiao_d 9 (GPIO_ACTIVE_LOW)>;
+        gpios
+            = <&expander 0 (GPIO_ACTIVE_LOW)>
+            , <&expander 1 (GPIO_ACTIVE_LOW)>
+            , <&expander 2 (GPIO_ACTIVE_LOW)>
+            , <&expander 3 (GPIO_ACTIVE_LOW)>
+            , <&expander 4 (GPIO_ACTIVE_LOW)>
+            , <&expander 5 (GPIO_ACTIVE_LOW)>
+            , <&expander 6 (GPIO_ACTIVE_LOW)>
+            ;
+    };
+    
+    kscan2: kscan2 {
+        compatible = "zmk,kscan-gpio-charlieplex";
+        interrupt-gpios = <&xiao_d 10 (GPIO_ACTIVE_LOW)>;
+        gpios
+            = <&expander 8 (GPIO_ACTIVE_LOW)>
+            , <&expander 9 (GPIO_ACTIVE_LOW)>
+            , <&expander 10 (GPIO_ACTIVE_LOW)>
+            , <&expander 11 (GPIO_ACTIVE_LOW)>
+            , <&expander 12 (GPIO_ACTIVE_LOW)>
+            , <&expander 13 (GPIO_ACTIVE_LOW)>
+            , <&expander 14  (GPIO_ACTIVE_LOW)>
+            ;
+    };
+
+    kscan3: kscan3 {
+        compatible = "zmk,kscan-gpio-direct";
+        input-gpios
+            = <&xiao_d 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&xiao_d 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&gpio0 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            ;
+    };
+};

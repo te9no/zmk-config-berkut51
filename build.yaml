@@ -1,0 +1,12 @@
+---
+include:
+# Shields
+  - board: seeeduino_xiao_ble
+    shield: Berkut51 rgbled_adapter
+    snippet: zmk-usb-logging studio-rpc-usb-uart
+    artifact-name: Berkut51
+
+# Settings Reset
+  - board: seeeduino_xiao_ble
+    shield: settings_reset
+
