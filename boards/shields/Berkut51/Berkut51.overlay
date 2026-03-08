@@ -106,8 +106,8 @@
     kscan3: kscan3 {
         compatible = "zmk,kscan-gpio-direct";
         input-gpios
-            = <&xiao_d 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
-            , <&xiao_d 3 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            = <&expander 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
+            , <&expander 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
             , <&gpio0 10 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>
             ;
     };
